@@ -11,6 +11,8 @@ import (
 )
 
 // go run main.go run <cmd> <args>
+// e.g., go run main.go /bin/bash
+// alternatively, run go build main.go and sudo ./main run /bin/bash
 func main() {
 	switch os.Args[1] {
 	case "run":
@@ -22,9 +24,13 @@ func main() {
 	}
 }
 
+// we need to have two functions because the first function needs to create the namespace and the second function runs the commands
 func run() {
 	fmt.Printf("Running %v \n", os.Args[2:])
-
+	
+	// see https://man7.org/linux/man-pages/man5/proc.5.html -> /proc/[pid]/exe
+	// This file is this file is a symbolic line containing the actual pathname of the executed command.
+	// In this case, readlink /proc/self/exe will be go run main.go 
 	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
